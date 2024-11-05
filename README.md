@@ -8,18 +8,19 @@ A Flutter practice app for connecting a book-search API to a Riverpod-managed se
 
 ![Flutter book search interface](.github/assets/ui-preview.png)
 
-이 이미지는 현재 저장소를 Flutter Web release 모드로 빌드해 실제 렌더링한 화면입니다. 초기 상태에서는 검색 결과가 비어 있으므로 검색창 중심의 UI가 먼저 표시됩니다.
+이 이미지는 Android Emulator에서 기본 앱을 실행해 검색창과 2열 결과 카드가 함께 보이는 상태를 캡처한 것입니다. 포트폴리오 preview는 외부 API credential 없이도 재현되도록 **명시적인 sample data mode**를 사용합니다.
 
-This screenshot comes from the current Flutter Web release build. The initial state intentionally starts without result cards until a search is submitted.
+This screenshot is captured from the default app on an Android Emulator. The portfolio preview uses an explicit **sample-data mode** so the search/result UI remains reproducible without committing API credentials.
 
 ## Features / 주요 구현
 
 - 검색어 입력 및 submit/search action
 - Riverpod ViewModel 상태 구독
-- 검색 결과를 3-column `GridView`로 표시
+- 검색 결과를 모바일 친화적인 2-column card grid로 표시
 - 책 표지 이미지를 네트워크 이미지로 렌더링
 - 결과 선택 시 상세 정보를 bottom sheet로 표시
 - DTO → domain model → repository → ViewModel → UI 흐름 연습
+- API credential이 없거나 요청이 실패하면 sample data로 안전하게 fallback
 
 ## Structure / 구조
 
@@ -43,12 +44,16 @@ flutter pub get
 flutter run
 ```
 
-## Validate / 검증
+Naver Book Search를 live mode로 사용하려면 credential을 소스에 넣지 말고 실행 시 전달합니다.
 
 ```bash
-flutter build web --release
+flutter run \
+  --dart-define=NAVER_CLIENT_ID=... \
+  --dart-define=NAVER_CLIENT_SECRET=...
 ```
 
-2026-08-20 기준 `flutter pub get`과 Flutter Web release build를 다시 통과했습니다. 외부 검색 API의 실제 응답은 네트워크/API 상태에 따라 달라질 수 있습니다.
+## Validate / 검증
 
-As of 2026-08-20, dependency resolution and the Flutter Web release build pass again. Live search results still depend on the external API/network path used by the practice repository.
+2026-08-20 기준 dependency resolution, static analysis, Android build/run을 다시 검증했습니다. 외부 검색 API는 선택적인 live mode이며 README 대표 화면은 credential이 필요 없는 sample mode입니다.
+
+As of 2026-08-20, dependency resolution, static analysis, and Android build/run were re-validated. The external API is optional; the README preview deliberately uses credential-free sample data.
