@@ -1,50 +1,65 @@
-# Flutter Book Search App
+# Book Finder
 
-책 검색 API 결과를 Flutter UI에 연결하면서 Riverpod 기반 상태 관리, 검색 입력, grid rendering, 상세 bottom sheet 흐름을 연습한 프로젝트입니다.
+Flutter와 Riverpod으로 만든 작은 **모바일 Book Discovery 앱**입니다. 책을 검색하고, 2열 discovery shelf에서 표지와 메타데이터를 비교한 뒤, 상세 화면에서 책 소개와 ISBN을 확인하고 온라인 상세 페이지로 이어지는 흐름을 구현했습니다.
 
-A Flutter practice app for connecting a book-search API to a Riverpod-managed search UI, grid results, and a detail bottom sheet.
+Naver Book Search API를 연결할 수 있지만 credential은 앱 소스에 저장하지 않습니다. credential이 없는 포트폴리오 실행에서는 재현 가능한 curated shelf를 사용해 검색·empty state·detail flow를 그대로 확인할 수 있습니다.
 
-## UI Preview / 구현 화면
+## Mobile preview
 
-![Flutter book search interface](.github/assets/ui-preview.png)
+| Discovery | Search results | Book detail |
+| --- | --- | --- |
+| ![Book discovery home](.github/assets/portfolio/01-book-discovery.png) | ![Book search results](.github/assets/portfolio/02-search-results.png) | ![Book detail](.github/assets/portfolio/03-book-detail.png) |
 
-이 이미지는 Android Emulator에서 기본 앱을 실행해 검색창과 2열 결과 카드가 함께 보이는 상태를 캡처한 것입니다. 포트폴리오 preview는 외부 API credential 없이도 재현되도록 **명시적인 sample data mode**를 사용합니다.
+모든 대표 이미지는 Flutter Web이 아니라 **Android 15 / API 35 Emulator**에서 실제 앱을 실행하고 interaction한 뒤 캡처했습니다.
 
-This screenshot is captured from the default app on an Android Emulator. The portfolio preview uses an explicit **sample-data mode** so the search/result UI remains reproducible without committing API credentials.
+## Product experience
 
-## Features / 주요 구현
+- `Book Finder` branding + discovery hero
+- 제목·저자·출판사 기반 검색 입력
+- `Flutter`, `Architecture`, `Data`, `Design` 빠른 탐색 chip
+- 검색 결과 count와 curated/live 상태 표시
+- 실제 cover thumbnail을 `BoxFit.contain`으로 표시해 과도한 crop 방지
+- title / author / publisher / publication date hierarchy를 갖춘 2-column card grid
+- 검색 transition을 보여주는 loading skeleton
+- 매칭 결과가 없을 때 별도 empty result UI
+- 큰 표지, 저자, 출판사, 출간일, ISBN, 소개를 갖춘 full detail page
+- 관심 목록 demo action + 온라인 상세 페이지 CTA
+- 네트워크 이미지 실패 시 앱이 무너지지 않는 cover fallback
 
-- 검색어 입력 및 submit/search action
-- Riverpod ViewModel 상태 구독
-- 검색 결과를 모바일 친화적인 2-column card grid로 표시
-- 책 표지 이미지를 네트워크 이미지로 렌더링
-- 결과 선택 시 상세 정보를 bottom sheet로 표시
-- DTO → domain model → repository → ViewModel → UI 흐름 연습
-- API credential이 없거나 요청이 실패하면 sample data로 안전하게 fallback
+추가 empty-state 캡처는 [`.github/assets/portfolio/04-empty-or-loading.png`](.github/assets/portfolio/04-empty-or-loading.png)에 포함되어 있습니다.
 
-## Structure / 구조
+## Architecture
 
 ```text
 lib/
 ├── data/
-│   ├── dto/                 # API response DTO
-│   ├── model/               # Book domain model
-│   └── repository/          # search repository
-├── ui/pages/home/
-│   ├── home_page.dart       # search + result grid
-│   ├── home_view_model.dart # Riverpod state
-│   └── widgets/             # detail bottom sheet
-└── main.dart
+│   ├── dto/                  # Naver API response mapping
+│   ├── model/                # Book domain model + display helpers
+│   └── repository/           # live API / curated fallback policy
+├── ui/pages/
+│   ├── home/
+│   │   ├── home_page.dart    # discovery/search/grid/loading/empty UI
+│   │   └── home_view_model.dart
+│   └── detail/
+│       └── detail_page.dart  # product detail + optional web detail
+└── main.dart                 # app theme and ProviderScope
 ```
 
-## Run / 실행
+`HomePage → HomeViewModel → BookRepository → DTO/Book` 흐름으로 UI와 데이터 접근 책임을 분리했습니다. API 응답의 `<b>` 같은 markup은 domain model 생성 시 정리해 화면에 API 표현이 그대로 노출되지 않도록 했습니다.
+
+## Search modes
+
+### Curated portfolio mode
+
+별도 설정 없이 실행하면 deterministic curated shelf를 사용합니다. 검색 자체는 실제로 동작하며, 존재하지 않는 검색어는 전체 sample 데이터를 다시 보여주는 대신 자연스러운 **0 result state**로 연결됩니다.
 
 ```bash
-flutter pub get
 flutter run
 ```
 
-Naver Book Search를 live mode로 사용하려면 credential을 소스에 넣지 말고 실행 시 전달합니다.
+### Naver live mode
+
+live credential은 `--dart-define`으로만 전달합니다.
 
 ```bash
 flutter run \
@@ -52,8 +67,32 @@ flutter run \
   --dart-define=NAVER_CLIENT_SECRET=...
 ```
 
-## Validate / 검증
+`NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET` 실제 값은 repository에 저장하지 않습니다. live 요청이 불가능한 경우에도 curated fallback으로 앱의 탐색 흐름이 유지됩니다.
 
-2026-08-20 기준 dependency resolution, static analysis, Android build/run을 다시 검증했습니다. 외부 검색 API는 선택적인 live mode이며 README 대표 화면은 credential이 필요 없는 sample mode입니다.
+## Validation
 
-As of 2026-08-20, dependency resolution, static analysis, and Android build/run were re-validated. The external API is optional; the README preview deliberately uses credential-free sample data.
+2026-08-20 기준 아래 항목을 다시 검증했습니다.
+
+```bash
+flutter pub get
+flutter analyze
+flutter test
+```
+
+- `flutter analyze`: **0 issues**
+- `flutter test`: **4 tests passed**
+- Android Emulator debug build/install/run: **PASS**
+- 실제 `Design` query interaction: **3 results 확인**
+- no-match query: **empty result state 확인**
+- result card → detail navigation: **PASS**
+- runtime log scan: **RenderFlex overflow / image exception / fatal exception 없음**
+
+## Portfolio captures
+
+```text
+.github/assets/portfolio/
+├── 01-book-discovery.png
+├── 02-search-results.png
+├── 03-book-detail.png
+└── 04-empty-or-loading.png
+```
