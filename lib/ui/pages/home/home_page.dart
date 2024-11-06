@@ -34,14 +34,38 @@ class _HomePageState extends ConsumerState<HomePage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Book Search'),
-          centerTitle: true,
+          title: const Text('Book Finder'),
+          centerTitle: false,
         ),
         body: SafeArea(
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Find your next read',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '책 제목·저자를 검색하고 결과를 카드로 탐색합니다.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
                 child: TextField(
                   maxLines: 1,
                   controller: textEditingController,
@@ -49,11 +73,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                   textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
                     hintText: '책 제목이나 저자를 검색하세요',
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search_rounded),
                     suffixIcon: IconButton(
                       tooltip: '검색',
                       onPressed: () => search(textEditingController.text),
-                      icon: const Icon(Icons.arrow_forward),
+                      icon: const Icon(Icons.arrow_forward_rounded),
                     ),
                     filled: true,
                     border: OutlineInputBorder(
@@ -88,7 +112,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: const Text(
-                          'Sample data',
+                          'Preview data',
                           style: TextStyle(fontSize: 12),
                         ),
                       ),
@@ -103,7 +127,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   itemCount: state.books.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.69,
+                    childAspectRatio: 0.66,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
                   ),
@@ -147,6 +171,7 @@ class _BookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
+      elevation: 1,
       child: InkWell(
         onTap: onTap,
         child: Column(
@@ -156,7 +181,7 @@ class _BookCard extends StatelessWidget {
               child: _BookCover(book: book, index: index),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -173,6 +198,16 @@ class _BookCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    book.publisher,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600,
                         ),
                   ),
                 ],
@@ -194,10 +229,14 @@ class _BookCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (book.image.isNotEmpty) {
-      return Image.network(
-        book.image,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _placeholder(context),
+      return Container(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        padding: const EdgeInsets.all(12),
+        child: Image.network(
+          book.image,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _placeholder(context),
+        ),
       );
     }
     return _placeholder(context);
