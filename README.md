@@ -76,16 +76,3 @@ flutter run \
   --dart-define=NAVER_CLIENT_ID=... \
   --dart-define=NAVER_CLIENT_SECRET=...
 ```
-
-## Validation / 검증
-
-The following checks were actually completed during the portfolio polish. / 이번 포트폴리오 마무리 과정에서 실제로 확인한 결과입니다.
-
-- `flutter analyze` — **0 issues**
-- `flutter test` — **4 tests passed**
-- Android debug APK build — **PASS**
-- Android 15 / API 35 Emulator install & run — **PASS**
-- `Design` search / 검색 — **3 results confirmed / 확인**
-- no-match search / 검색 — **empty state confirmed / 확인**
-- result card → detail navigation — **PASS**
-- runtime log — **no RenderFlex overflow, image exception, or fatal exception / 관련 오류 없음**
