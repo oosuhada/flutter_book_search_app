@@ -257,17 +257,13 @@ class _DiscoveryHero extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    AppGlassSurface(
+                      tint: const Color(0xFF4B477F),
+                      borderRadius: BorderRadius.circular(999),
+                      blurSigma: 10,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
                         vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.11),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.14),
-                        ),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
@@ -503,44 +499,52 @@ class _ResultsHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 22, 20, 12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  query.isEmpty ? '오늘의 큐레이션' : '“$query” 검색 결과',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
+      child: AppGlassSurface(
+        borderRadius: BorderRadius.circular(20),
+        blurSigma: 11,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    query.isEmpty ? '오늘의 큐레이션' : '“$query” 검색 결과',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  isLoading ? '책장을 살펴보는 중이에요' : '$count권의 책을 찾았어요',
-                  style: const TextStyle(
-                    color: Color(0xFF77727F),
-                    fontSize: 13,
+                  const SizedBox(height: 3),
+                  Text(
+                    isLoading ? '책장을 살펴보는 중이에요' : '$count권의 책을 찾았어요',
+                    style: const TextStyle(
+                      color: Color(0xFF77727F),
+                      fontSize: 13,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          if (!isLoading)
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
+                ],
               ),
-              child: const Icon(Icons.grid_view_rounded, size: 18),
             ),
-        ],
+            if (!isLoading)
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .44),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: .72),
+                  ),
+                ),
+                child: const Icon(Icons.grid_view_rounded, size: 18),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -784,14 +788,11 @@ class _EmptyResults extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
-      child: Container(
+      child: AppGlassSurface(
         key: const ValueKey('empty-results'),
+        borderRadius: BorderRadius.circular(24),
+        blurSigma: 12,
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFE8E5ED)),
-        ),
         child: Column(
           children: [
             Container(
