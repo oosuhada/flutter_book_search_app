@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_book_search_app/ui/pages/home/home_page.dart';
+import 'package:flutter_book_search_app/v2/v2_glass.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
@@ -12,22 +13,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const seed = Color(0xFF5B5BD6);
+    final baseTheme = V2GlassTheme.light(
+      seed: seed,
+      background: const Color(0xFFFAF9FD),
+      ink: const Color(0xFF2F2C36),
+    );
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Book Finder',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seed,
-          brightness: Brightness.light,
-          surface: const Color(0xFFFAF9FD),
-        ),
-        scaffoldBackgroundColor: const Color(0xFFFAF9FD),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFFAF9FD),
-          surfaceTintColor: Colors.transparent,
-        ),
+      theme: baseTheme.copyWith(
         cardTheme: CardThemeData(
           elevation: 0,
           margin: EdgeInsets.zero,
@@ -41,7 +36,8 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(18),
             borderSide: const BorderSide(color: Color(0xFFE6E3EC)),

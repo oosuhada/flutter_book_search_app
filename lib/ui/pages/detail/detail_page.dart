@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_book_search_app/data/model/book.dart';
+import 'package:flutter_book_search_app/v2/v2_glass.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class DetailPage extends StatelessWidget {
@@ -12,134 +13,126 @@ class DetailPage extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          tooltip: '뒤로',
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-        title: const Text(
-          'Book details',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
-        centerTitle: true,
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-            sliver: SliverList.list(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 26),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF0EEF6),
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: Center(
-                    child: SizedBox(
-                      width: 164,
-                      height: 238,
-                      child: Hero(
-                        tag: 'book-cover-${book.isbn}-${book.title}',
-                        child: _DetailCover(book: book),
+      extendBody: true,
+      body: Column(
+        children: [
+          AppGlassToolbar(
+            title: 'Book details',
+            onBack: () => Navigator.of(context).maybePop(),
+          ),
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                  sliver: SliverList.list(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 26),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0EEF6),
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                        child: Center(
+                          child: SizedBox(
+                            width: 164,
+                            height: 238,
+                            child: Hero(
+                              tag: 'book-cover-${book.isbn}-${book.title}',
+                              child: _DetailCover(book: book),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 24),
+                      Text(
+                        book.title,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          height: 1.17,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.6,
+                        ),
+                      ),
+                      const SizedBox(height: 9),
+                      Text(
+                        book.author.isEmpty ? '저자 정보 없음' : book.author,
+                        style: TextStyle(
+                          fontSize: 16,
+                          height: 1.3,
+                          fontWeight: FontWeight.w600,
+                          color: colors.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _MetadataPanel(book: book),
+                      const SizedBox(height: 26),
+                      const Text(
+                        '책 소개',
+                        style: TextStyle(
+                            fontSize: 19, fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        book.descriptionOrFallback,
+                        style: const TextStyle(
+                          color: Color(0xFF5F5A65),
+                          fontSize: 14.5,
+                          height: 1.65,
+                        ),
+                      ),
+                      const SizedBox(height: 108),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  book.title,
-                  style: const TextStyle(
-                    fontSize: 26,
-                    height: 1.17,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.6,
-                  ),
-                ),
-                const SizedBox(height: 9),
-                Text(
-                  book.author.isEmpty ? '저자 정보 없음' : book.author,
-                  style: TextStyle(
-                    fontSize: 16,
-                    height: 1.3,
-                    fontWeight: FontWeight.w600,
-                    color: colors.primary,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _MetadataPanel(book: book),
-                const SizedBox(height: 26),
-                const Text(
-                  '책 소개',
-                  style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  book.descriptionOrFallback,
-                  style: const TextStyle(
-                    color: Color(0xFF5F5A65),
-                    fontSize: 14.5,
-                    height: 1.65,
-                  ),
-                ),
-                const SizedBox(height: 108),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
-          decoration: const BoxDecoration(
-            color: Color(0xFFFAF9FD),
-            border: Border(top: BorderSide(color: Color(0xFFE7E4EC))),
-          ),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 54,
-                height: 52,
-                child: IconButton.outlined(
-                  tooltip: '관심 목록에 담기',
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('“${book.title}”을 관심 목록에 담았어요.'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.bookmark_add_outlined),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: SizedBox(
-                  height: 52,
-                  child: FilledButton.icon(
-                    key: const ValueKey('open-book-link'),
-                    onPressed: book.link.isEmpty
-                        ? null
-                        : () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) => BookWebPage(book: book),
-                              ),
-                            );
-                          },
-                    icon: const Icon(Icons.open_in_new_rounded, size: 19),
-                    label: const Text(
-                      '온라인 상세 보기',
-                      style: TextStyle(fontWeight: FontWeight.w800),
+      bottomNavigationBar: AppGlassBottomBar(
+        child: Row(
+          children: [
+            SizedBox(
+              width: 54,
+              height: 52,
+              child: IconButton.outlined(
+                tooltip: '관심 목록에 담기',
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('“${book.title}”을 관심 목록에 담았어요.'),
+                      behavior: SnackBarBehavior.floating,
                     ),
+                  );
+                },
+                icon: const Icon(Icons.bookmark_add_outlined),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: SizedBox(
+                height: 52,
+                child: FilledButton.icon(
+                  key: const ValueKey('open-book-link'),
+                  onPressed: book.link.isEmpty
+                      ? null
+                      : () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => BookWebPage(book: book),
+                            ),
+                          );
+                        },
+                  icon: const Icon(Icons.open_in_new_rounded, size: 19),
+                  label: const Text(
+                    '온라인 상세 보기',
+                    style: TextStyle(fontWeight: FontWeight.w800),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -258,7 +251,8 @@ class _DetailCover extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.auto_stories_rounded, color: Colors.white, size: 38),
+            const Icon(Icons.auto_stories_rounded,
+                color: Colors.white, size: 38),
             const SizedBox(height: 14),
             Text(
               book.title,
