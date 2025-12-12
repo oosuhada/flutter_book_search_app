@@ -564,71 +564,72 @@ class _BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: 205,
-              child: Hero(
-                tag: 'book-cover-${book.isbn}-${book.title}',
-                child: _BookCover(book: book, index: index),
+    return AppGlassSurface(
+      onTap: onTap,
+      semanticLabel: '${book.title}, ${book.author}',
+      borderRadius: BorderRadius.circular(22),
+      blurSigma: 18,
+      surfaceOpacity: .66,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            height: 205,
+            child: Hero(
+              tag: 'book-cover-${book.isbn}-${book.title}',
+              child: _BookCover(book: book, index: index),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      height: 1.22,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    book.author,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12.3,
+                      color: Color(0xFF706C77),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    book.publisher,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    book.publicationLabel,
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: Color(0xFF928D98),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      book.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14.5,
-                        height: 1.22,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      book.author,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12.3,
-                        color: Color(0xFF706C77),
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      book.publisher,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      book.publicationLabel,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        color: Color(0xFF928D98),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -646,20 +647,20 @@ class _BookCover extends StatelessWidget {
         ? _placeholder(context)
         : Image.network(
             book.image,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.medium,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
             loadingBuilder: (context, child, progress) =>
                 progress == null ? child : _placeholder(context),
             errorBuilder: (_, __, ___) => _placeholder(context),
           );
 
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.fromLTRB(15, 15, 15, 12),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF3F1F7),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(21)),
-      ),
+    return AppGlassSurface(
+      tint: const Color(0xFFF3F0FF),
+      surfaceOpacity: .56,
+      blurSigma: 18,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(21)),
       child: child,
     );
   }
@@ -673,28 +674,17 @@ class _BookCover extends StatelessWidget {
     ];
     final color = palette[index % palette.length];
 
-    return AspectRatio(
-      aspectRatio: 0.68,
+    return SizedBox.expand(
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: const [
-            BoxShadow(
-              blurRadius: 9,
-              offset: Offset(0, 5),
-              color: Color(0x26000000),
-            ),
-          ],
-        ),
+        decoration: BoxDecoration(color: color),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.menu_book_rounded,
-                  color: Colors.white, size: 32),
-              const SizedBox(height: 10),
+                  color: Colors.white, size: 36),
+              const SizedBox(height: 12),
               Text(
                 book.title,
                 maxLines: 4,
@@ -702,7 +692,7 @@ class _BookCover extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 11.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w800,
                 ),
               ),
