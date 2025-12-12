@@ -45,40 +45,52 @@ class DetailPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Text(
-                        book.title,
-                        style: const TextStyle(
-                          fontSize: 26,
-                          height: 1.17,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -0.6,
-                        ),
-                      ),
-                      const SizedBox(height: 9),
-                      Text(
-                        book.author.isEmpty ? '저자 정보 없음' : book.author,
-                        style: TextStyle(
-                          fontSize: 16,
-                          height: 1.3,
-                          fontWeight: FontWeight.w600,
-                          color: colors.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      _MetadataPanel(book: book),
-                      const SizedBox(height: 26),
-                      const Text(
-                        '책 소개',
-                        style: TextStyle(
-                            fontSize: 19, fontWeight: FontWeight.w800),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        book.descriptionOrFallback,
-                        style: const TextStyle(
-                          color: Color(0xFF5F5A65),
-                          fontSize: 14.5,
-                          height: 1.65,
+                      AppGlassSurface(
+                        tint: const Color(0xFFF7F5FC),
+                        surfaceOpacity: .76,
+                        blurSigma: 20,
+                        borderRadius: BorderRadius.circular(26),
+                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              book.title,
+                              style: const TextStyle(
+                                fontSize: 26,
+                                height: 1.17,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.6,
+                              ),
+                            ),
+                            const SizedBox(height: 9),
+                            Text(
+                              book.author.isEmpty ? '저자 정보 없음' : book.author,
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 1.3,
+                                fontWeight: FontWeight.w600,
+                                color: colors.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            _MetadataPanel(book: book),
+                            const SizedBox(height: 24),
+                            const Text(
+                              '책 소개',
+                              style: TextStyle(
+                                  fontSize: 19, fontWeight: FontWeight.w800),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              book.descriptionOrFallback,
+                              style: const TextStyle(
+                                color: Color(0xFF4F4A57),
+                                fontSize: 14.5,
+                                height: 1.65,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 108),
@@ -148,7 +160,8 @@ class _MetadataPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppGlassSurface(
       borderRadius: BorderRadius.circular(20),
-      blurSigma: 12,
+      blurSigma: 16,
+      surfaceOpacity: .66,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Column(
         children: [
@@ -287,6 +300,8 @@ class _DetailCover extends StatelessWidget {
                   book.image,
                   fit: BoxFit.contain,
                   filterQuality: FilterQuality.high,
+                  loadingBuilder: (context, child, progress) =>
+                      progress == null ? child : placeholder,
                   errorBuilder: (_, __, ___) => placeholder,
                 ),
               ),

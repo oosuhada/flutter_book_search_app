@@ -54,6 +54,7 @@ class AppGlassSurface extends StatelessWidget {
     this.borderRadius = const BorderRadius.all(Radius.circular(26)),
     this.blurSigma = 18,
     this.tint,
+    this.surfaceOpacity,
   });
 
   final Widget child;
@@ -62,6 +63,12 @@ class AppGlassSurface extends StatelessWidget {
   final double blurSigma;
   final Color? tint;
 
+  /// Optional local density override for content-heavy glass surfaces.
+  ///
+  /// The default keeps the lighter control treatment. Higher values are useful
+  /// for reading surfaces without changing every glass control in the app.
+  final double? surfaceOpacity;
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.maybeOf(context);
@@ -69,10 +76,21 @@ class AppGlassSurface extends StatelessWidget {
     final theme = Theme.of(context);
     final dark = theme.brightness == Brightness.dark;
     final base = tint ?? (dark ? const Color(0xFF24252B) : Colors.white);
-    final accent = Color.lerp(base, theme.colorScheme.primary, dark ? .16 : .10)!;
-    final topAlpha = highContrast ? .98 : (dark ? .60 : .48);
-    final middleAlpha = highContrast ? .96 : (dark ? .50 : .36);
-    final bottomAlpha = highContrast ? .94 : (dark ? .42 : .28);
+    final accent =
+        Color.lerp(base, theme.colorScheme.primary, dark ? .16 : .10)!;
+    final requestedOpacity = surfaceOpacity?.clamp(.0, 1.0);
+    final middleAlpha =
+        highContrast ? .96 : requestedOpacity ?? (dark ? .50 : .36);
+    final topAlpha = highContrast
+        ? .98
+        : requestedOpacity == null
+            ? (dark ? .60 : .48)
+            : (middleAlpha + .10).clamp(.0, 1.0);
+    final bottomAlpha = highContrast
+        ? .94
+        : requestedOpacity == null
+            ? (dark ? .42 : .28)
+            : (middleAlpha - .08).clamp(.0, 1.0);
 
     final body = Stack(
       fit: StackFit.passthrough,
