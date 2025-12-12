@@ -58,14 +58,11 @@ class _HomePageState extends ConsumerState<HomePage> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: AppGlassSegmentedControl<String>(
-                      values: _suggestions,
-                      selected: state.query,
-                      labelBuilder: (value) => value,
-                      onSelected: _selectSuggestion,
-                    ),
+                  child: AppGlassSegmentedControl<String>(
+                    values: _suggestions,
+                    selected: state.query,
+                    labelBuilder: (value) => value,
+                    onSelected: _selectSuggestion,
                   ),
                 ),
               ),
@@ -137,14 +134,16 @@ class _BrandBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
       child: Row(
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: colors.primary,
+          SizedBox(
+            width: 44,
+            height: 44,
+            child: AppGlassSurface(
+              tint: colors.primary,
+              surfaceOpacity: .76,
+              blurSigma: 16,
               borderRadius: BorderRadius.circular(14),
+              child: Icon(Icons.auto_stories_rounded, color: colors.onPrimary),
             ),
-            child: Icon(Icons.auto_stories_rounded, color: colors.onPrimary),
           ),
           const SizedBox(width: 12),
           const Expanded(
@@ -163,13 +162,12 @@ class _BrandBar extends StatelessWidget {
               ],
             ),
           ),
-          Container(
+          AppGlassSurface(
+            tint: isSample ? const Color(0xFFE9E4FF) : const Color(0xFFDFF3E7),
+            surfaceOpacity: .62,
+            blurSigma: 14,
+            borderRadius: BorderRadius.circular(16),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-            decoration: BoxDecoration(
-              color:
-                  isSample ? const Color(0xFFF1EEFF) : const Color(0xFFE8F6EE),
-              borderRadius: BorderRadius.circular(999),
-            ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -520,11 +518,14 @@ class _ResultsHeading extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 3),
-                  Text(
-                    isLoading ? '책장을 살펴보는 중이에요' : '$count권의 책을 찾았어요',
-                    style: const TextStyle(
-                      color: Color(0xFF77727F),
-                      fontSize: 13,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(
+                      isLoading ? '책장을 살펴보는 중이에요' : '$count권의 책을 찾았어요',
+                      style: const TextStyle(
+                        color: Color(0xFF77727F),
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ],
@@ -787,14 +788,16 @@ class _EmptyResults extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
         child: Column(
           children: [
-            Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                shape: BoxShape.circle,
+            SizedBox(
+              width: 60,
+              height: 60,
+              child: AppGlassSurface(
+                tint: Theme.of(context).colorScheme.primaryContainer,
+                surfaceOpacity: .68,
+                blurSigma: 16,
+                borderRadius: BorderRadius.circular(30),
+                child: const Icon(Icons.search_off_rounded, size: 28),
               ),
-              child: const Icon(Icons.search_off_rounded, size: 28),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -812,10 +815,12 @@ class _EmptyResults extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            FilledButton.tonalIcon(
+            AppGlassPrimaryButton(
               onPressed: onReset,
-              icon: const Icon(Icons.auto_stories_rounded, size: 18),
-              label: const Text('추천 책으로 돌아가기'),
+              icon: Icons.auto_stories_rounded,
+              label: '추천 책으로 돌아가기',
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
+              tint: Theme.of(context).colorScheme.primaryContainer,
             ),
           ],
         ),

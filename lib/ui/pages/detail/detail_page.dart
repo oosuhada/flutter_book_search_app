@@ -108,9 +108,8 @@ class DetailPage extends StatelessWidget {
             SizedBox(
               width: 54,
               height: 52,
-              child: IconButton.outlined(
-                tooltip: '관심 목록에 담기',
-                onPressed: () {
+              child: AppGlassSurface(
+                onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('“${book.title}”을 관심 목록에 담았어요.'),
@@ -118,30 +117,28 @@ class DetailPage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.bookmark_add_outlined),
+                semanticLabel: '관심 목록에 담기',
+                borderRadius: BorderRadius.circular(17),
+                blurSigma: 16,
+                surfaceOpacity: .58,
+                child: const Icon(Icons.bookmark_add_outlined),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: SizedBox(
-                height: 52,
-                child: FilledButton.icon(
-                  key: const ValueKey('open-book-link'),
-                  onPressed: book.link.isEmpty
-                      ? null
-                      : () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => BookWebPage(book: book),
-                            ),
-                          );
-                        },
-                  icon: const Icon(Icons.open_in_new_rounded, size: 19),
-                  label: const Text(
-                    '온라인 상세 보기',
-                    style: TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                ),
+              child: AppGlassPrimaryButton(
+                key: const ValueKey('open-book-link'),
+                onPressed: book.link.isEmpty
+                    ? null
+                    : () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => BookWebPage(book: book),
+                          ),
+                        );
+                      },
+                icon: Icons.open_in_new_rounded,
+                label: '온라인 상세 보기',
               ),
             ),
           ],
@@ -160,8 +157,8 @@ class _MetadataPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppGlassSurface(
       borderRadius: BorderRadius.circular(20),
-      blurSigma: 16,
-      surfaceOpacity: .66,
+      blurSigma: 20,
+      surfaceOpacity: .42,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Column(
         children: [
@@ -205,14 +202,16 @@ class _MetadataRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 13),
       child: Row(
         children: [
-          Container(
+          SizedBox(
             width: 34,
             height: 34,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
+            child: AppGlassSurface(
+              tint: Theme.of(context).colorScheme.primaryContainer,
+              surfaceOpacity: .58,
+              blurSigma: 14,
               borderRadius: BorderRadius.circular(10),
+              child: Icon(icon, size: 18),
             ),
-            child: Icon(icon, size: 18),
           ),
           const SizedBox(width: 12),
           SizedBox(

@@ -300,38 +300,43 @@ class AppGlassSegmentedControl<T> extends StatelessWidget {
       blurSigma: 14,
       padding: const EdgeInsets.all(4),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: values.map((value) {
           final active = value == selected;
-          return Semantics(
-            selected: active,
-            button: true,
-            label: labelBuilder(value),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(17),
-                onTap: () => onSelected(value),
-                child: AnimatedContainer(
-                  duration: reduceMotion
-                      ? Duration.zero
-                      : const Duration(milliseconds: 210),
-                  curve: Curves.easeOutCubic,
-                  constraints: const BoxConstraints(minHeight: 40),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                  decoration: BoxDecoration(
-                    color: active
-                        ? colors.primary.withValues(alpha: .12)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(17),
-                  ),
-                  child: Text(
-                    labelBuilder(value),
-                    style: TextStyle(
-                      color: active ? colors.primary : colors.onSurfaceVariant,
-                      fontSize: 12.5,
-                      fontWeight: active ? FontWeight.w800 : FontWeight.w600,
+          return Expanded(
+            child: Semantics(
+              selected: active,
+              button: true,
+              label: labelBuilder(value),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(17),
+                  onTap: () => onSelected(value),
+                  child: AnimatedContainer(
+                    duration: reduceMotion
+                        ? Duration.zero
+                        : const Duration(milliseconds: 210),
+                    curve: Curves.easeOutCubic,
+                    constraints: const BoxConstraints(minHeight: 42),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
+                    decoration: BoxDecoration(
+                      color: active
+                          ? colors.primary.withValues(alpha: .12)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(17),
+                    ),
+                    child: Text(
+                      labelBuilder(value),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color:
+                            active ? colors.primary : colors.onSurfaceVariant,
+                        fontSize: 12.5,
+                        fontWeight: active ? FontWeight.w800 : FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -339,6 +344,66 @@ class AppGlassSegmentedControl<T> extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+class AppGlassPrimaryButton extends StatelessWidget {
+  const AppGlassPrimaryButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.icon,
+    this.tint,
+    this.foregroundColor,
+    this.minHeight = 52,
+    this.borderRadius = 17,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+  final Color? tint;
+  final Color? foregroundColor;
+  final double minHeight;
+  final double borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final enabled = onPressed != null;
+    final foreground = foregroundColor ?? scheme.onPrimary;
+    return Opacity(
+      opacity: enabled ? 1 : .46,
+      child: SizedBox(
+        width: double.infinity,
+        height: minHeight,
+        child: AppGlassSurface(
+          onTap: onPressed,
+          semanticLabel: label,
+          tint: tint ?? scheme.primary,
+          surfaceOpacity: .72,
+          blurSigma: 18,
+          borderRadius: BorderRadius.circular(borderRadius),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 19, color: foreground),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                label,
+                style: TextStyle(
+                  color: foreground,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
