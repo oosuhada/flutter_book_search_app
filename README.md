@@ -22,10 +22,6 @@ Naver Book Search API를 연결할 수 있으며, credential이 없는 환경에
   <img src=".github/assets/portfolio/04-empty-or-loading.png" width="45%" alt="Book search empty state" />
 </p>
 
-All preview images were captured from the actual app running on an **Android 15 / API 35 Emulator**, not from Flutter Web.
-
-모든 대표 이미지는 Flutter Web이 아니라 **Android 15 / API 35 Emulator**에서 실제 앱을 실행하고 interaction한 뒤 캡처했습니다.
-
 ## What it does / 주요 기능
 
 - **Book discovery** — discovery hero와 `Flutter`, `Architecture`, `Data`, `Design` 빠른 탐색
