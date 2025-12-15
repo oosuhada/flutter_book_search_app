@@ -73,6 +73,13 @@ flutter run \
   --dart-define=NAVER_CLIENT_SECRET=...
 ```
 
-## Topics
+## Architecture & Topics / 아키텍처 및 주제
 
-[`book-search`](https://github.com/topics/book-search) · [`dart`](https://github.com/topics/dart) · [`flutter`](https://github.com/topics/flutter) · [`mobile-app`](https://github.com/topics/mobile-app) · [`naver-api`](https://github.com/topics/naver-api) · [`repository-pattern`](https://github.com/topics/repository-pattern) · [`riverpod`](https://github.com/topics/riverpod) · [`api`](https://github.com/topics/api) · [`clean-architecture`](https://github.com/topics/clean-architecture) · [`state-management`](https://github.com/topics/state-management) · [`mobile-development`](https://github.com/topics/mobile-development) · [`flutter-app`](https://github.com/topics/flutter-app) · [`search-app`](https://github.com/topics/search-app) · [`cross-platform`](https://github.com/topics/cross-platform) · [`flutter-development`](https://github.com/topics/flutter-development)
+**Architecture / 아키텍처**<br>
+[`clean-architecture`](https://github.com/topics/clean-architecture) · [`repository-pattern`](https://github.com/topics/repository-pattern) · [`reactive-state-management`](https://github.com/topics/reactive-state-management) · [`client-server-architecture`](https://github.com/topics/client-server-architecture) · [`api-adapter`](https://github.com/topics/api-adapter) · [`unidirectional-data-flow`](https://github.com/topics/unidirectional-data-flow)
+
+**Project context / 프로젝트 맥락**<br>
+[`api`](https://github.com/topics/api) · [`book-search`](https://github.com/topics/book-search) · [`cross-platform`](https://github.com/topics/cross-platform) · [`flutter-app`](https://github.com/topics/flutter-app) · [`flutter-development`](https://github.com/topics/flutter-development) · [`mobile-app`](https://github.com/topics/mobile-app) · [`mobile-development`](https://github.com/topics/mobile-development) · [`naver-api`](https://github.com/topics/naver-api) · [`search-app`](https://github.com/topics/search-app) · [`state-management`](https://github.com/topics/state-management)
+
+**Implementation stack / 구현 스택**<br>
+[`dart`](https://github.com/topics/dart) · [`flutter`](https://github.com/topics/flutter) · [`riverpod`](https://github.com/topics/riverpod)
