@@ -316,7 +316,7 @@ class _DiscoveryHero extends StatelessWidget {
                     SizedBox(
                       width: 238,
                       child: Text(
-                        '취향을 넓혀 줄 한 권을 가볍게 발견해 보세요.',
+                        '취향을 넓혀 줄 한 권,\n오늘 가볍게 발견해 보세요.',
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.72),
                           fontSize: 12.8,
