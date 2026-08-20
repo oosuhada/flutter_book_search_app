@@ -4,6 +4,8 @@ A mobile **Book Discovery app** built with Flutter and Riverpod. Search for book
 
 Flutter와 Riverpod으로 만든 모바일 **Book Discovery 앱**입니다. 책을 검색하고 2열 discovery shelf에서 표지와 메타데이터를 비교한 뒤, 상세 화면에서 책 소개와 ISBN을 확인하고 온라인 상세 페이지로 이어지는 흐름을 구현했습니다.
 
+---
+
 The app can connect to the Naver Book Search API, while a deterministic curated dataset keeps the same search, empty-state, and detail flow available without credentials.
 
 Naver Book Search API를 연결할 수 있으며, credential이 없는 환경에서도 재현 가능한 curated sample 데이터로 동일한 검색·empty state·detail flow를 확인할 수 있습니다.
