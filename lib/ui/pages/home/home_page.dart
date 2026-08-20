@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_book_search_app/data/model/book.dart';
+import 'package:flutter_book_search_app/ui/pages/detail/detail_page.dart';
 import 'package:flutter_book_search_app/ui/pages/home/home_view_model.dart';
-import 'package:flutter_book_search_app/ui/pages/home/widgets/home_bottom_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -12,17 +12,24 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  final TextEditingController textEditingController =
-      TextEditingController(text: 'Flutter');
+  static const _suggestions = ['Flutter', 'Architecture', 'Data', 'Design'];
 
-  Future<void> search(String text) async {
+  final TextEditingController _controller = TextEditingController();
+
+  Future<void> _search(String text) async {
     FocusScope.of(context).unfocus();
     await ref.read(homeViewModelProvider.notifier).search(text);
   }
 
+  void _selectSuggestion(String suggestion) {
+    _controller.text = suggestion;
+    _controller.selection = TextSelection.collapsed(offset: suggestion.length);
+    _search(suggestion);
+  }
+
   @override
   void dispose() {
-    textEditingController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -33,121 +40,93 @@ class _HomePageState extends ConsumerState<HomePage> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Book Finder'),
-          centerTitle: false,
-        ),
         body: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Find your next read',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+          child: CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverToBoxAdapter(child: _BrandBar(isSample: state.isSample)),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: _DiscoveryHero(
+                    controller: _controller,
+                    onSubmitted: _search,
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '책 제목·저자를 검색하고 결과를 카드로 탐색합니다.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-                child: TextField(
-                  maxLines: 1,
-                  controller: textEditingController,
-                  onSubmitted: search,
-                  textInputAction: TextInputAction.search,
-                  decoration: InputDecoration(
-                    hintText: '책 제목이나 저자를 검색하세요',
-                    prefixIcon: const Icon(Icons.search_rounded),
-                    suffixIcon: IconButton(
-                      tooltip: '검색',
-                      onPressed: () => search(textEditingController.text),
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                    ),
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '“${state.query}” · ${state.books.length} books',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                    ),
-                    if (state.isSample)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: const Text(
-                          'Preview data',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (state.isLoading) const LinearProgressIndicator(),
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-                  itemCount: state.books.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.66,
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
-                  ),
-                  itemBuilder: (context, index) {
-                    final book = state.books[index];
-                    return _BookCard(
-                      book: book,
-                      index: index,
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isDismissible: true,
-                          showDragHandle: true,
-                          builder: (context) => HomeBottomSheet(book),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                  child: SizedBox(
+                    height: 36,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _suggestions.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final suggestion = _suggestions[index];
+                        final isSelected = state.query.toLowerCase() ==
+                            suggestion.toLowerCase();
+                        return FilterChip(
+                          label: Text(suggestion),
+                          selected: isSelected,
+                          showCheckmark: false,
+                          onSelected: (_) => _selectSuggestion(suggestion),
+                          visualDensity: VisualDensity.compact,
                         );
                       },
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
+              SliverToBoxAdapter(
+                child: _ResultsHeading(
+                  query: state.query,
+                  count: state.books.length,
+                  isLoading: state.isLoading,
+                ),
+              ),
+              if (state.isLoading)
+                const _LoadingGrid()
+              else if (state.books.isEmpty)
+                SliverToBoxAdapter(
+                  child: _EmptyResults(
+                    query: state.query,
+                    onReset: () {
+                      _controller.clear();
+                      _search('');
+                    },
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                  sliver: SliverGrid.builder(
+                    itemCount: state.books.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 14,
+                      mainAxisSpacing: 14,
+                      mainAxisExtent: 348,
+                    ),
+                    itemBuilder: (context, index) {
+                      final book = state.books[index];
+                      return _BookCard(
+                        key: ValueKey('book-card-${book.isbn}'),
+                        book: book,
+                        index: index,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => DetailPage(book),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
             ],
           ),
         ),
@@ -156,8 +135,205 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 }
 
+class _BrandBar extends StatelessWidget {
+  const _BrandBar({required this.isSample});
+
+  final bool isSample;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 10),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: colors.primary,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(Icons.auto_stories_rounded, color: colors.onPrimary),
+          ),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Book Finder',
+                  style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800),
+                ),
+                SizedBox(height: 1),
+                Text(
+                  '읽고 싶은 책을 더 빠르게',
+                  style: TextStyle(fontSize: 12.5, color: Color(0xFF75717D)),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            decoration: BoxDecoration(
+              color: isSample
+                  ? const Color(0xFFF1EEFF)
+                  : const Color(0xFFE8F6EE),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isSample ? Icons.collections_bookmark_rounded : Icons.bolt,
+                  size: 14,
+                  color: isSample
+                      ? const Color(0xFF6456C7)
+                      : const Color(0xFF267A4B),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  isSample ? 'Curated' : 'Live',
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DiscoveryHero extends StatelessWidget {
+  const _DiscoveryHero({
+    required this.controller,
+    required this.onSubmitted,
+  });
+
+  final TextEditingController controller;
+  final ValueChanged<String> onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2E315F), Color(0xFF6757D5)],
+        ),
+        borderRadius: BorderRadius.circular(26),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Find your next read',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              height: 1.08,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            '제목, 저자, 출판사로 지금 읽을 책을 발견해 보세요.',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.78),
+              fontSize: 13.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            key: const ValueKey('book-search-field'),
+            controller: controller,
+            textInputAction: TextInputAction.search,
+            onSubmitted: onSubmitted,
+            decoration: InputDecoration(
+              hintText: '책 제목이나 저자를 검색하세요',
+              prefixIcon: const Icon(Icons.search_rounded),
+              suffixIcon: IconButton(
+                key: const ValueKey('book-search-button'),
+                tooltip: '검색',
+                onPressed: () => onSubmitted(controller.text),
+                icon: const Icon(Icons.arrow_forward_rounded),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ResultsHeading extends StatelessWidget {
+  const _ResultsHeading({
+    required this.query,
+    required this.count,
+    required this.isLoading,
+  });
+
+  final String query;
+  final int count;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  query.isEmpty ? '오늘의 큐레이션' : '“$query” 검색 결과',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  isLoading ? '책장을 살펴보는 중이에요' : '$count권의 책을 찾았어요',
+                  style: const TextStyle(
+                    color: Color(0xFF77727F),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!isLoading)
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.grid_view_rounded, size: 18),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _BookCard extends StatelessWidget {
   const _BookCard({
+    super.key,
     required this.book,
     required this.index,
     required this.onTap,
@@ -170,47 +346,66 @@ class _BookCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      clipBehavior: Clip.antiAlias,
-      elevation: 1,
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-              child: _BookCover(book: book, index: index),
+            SizedBox(
+              height: 205,
+              child: Hero(
+                tag: 'book-cover-${book.isbn}-${book.title}',
+                child: _BookCover(book: book, index: index),
+              ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    book.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    book.author,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    book.publisher,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 11, 12, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      book.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14.5,
+                        height: 1.22,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      book.author,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12.3,
+                        color: Color(0xFF706C77),
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      book.publisher,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      book.publicationLabel,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: Color(0xFF928D98),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -228,51 +423,193 @@ class _BookCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (book.image.isNotEmpty) {
-      return Container(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        padding: const EdgeInsets.all(12),
-        child: Image.network(
-          book.image,
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => _placeholder(context),
-        ),
-      );
-    }
-    return _placeholder(context);
+    final child = book.image.isEmpty
+        ? _placeholder(context)
+        : Image.network(
+            book.image,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.medium,
+            errorBuilder: (_, __, ___) => _placeholder(context),
+          );
+
+    return Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.fromLTRB(15, 15, 15, 12),
+      decoration: const BoxDecoration(
+        color: Color(0xFFF3F1F7),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(21)),
+      ),
+      child: child,
+    );
   }
 
   Widget _placeholder(BuildContext context) {
-    final palette = [
-      Colors.indigo,
-      Colors.teal,
-      Colors.deepOrange,
-      Colors.blueGrey,
-      Colors.deepPurple,
-      Colors.green,
+    const palette = [
+      Color(0xFF5D5BD4),
+      Color(0xFF327A70),
+      Color(0xFFB85D4A),
+      Color(0xFF48667C),
     ];
     final color = palette[index % palette.length];
 
-    return Container(
-      padding: const EdgeInsets.all(18),
-      color: color,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.menu_book_rounded, color: Colors.white, size: 42),
-          const SizedBox(height: 14),
-          Text(
-            book.title,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
+    return AspectRatio(
+      aspectRatio: 0.68,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 9,
+              offset: Offset(0, 5),
+              color: Color(0x26000000),
             ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.menu_book_rounded, color: Colors.white, size: 32),
+              const SizedBox(height: 10),
+              Text(
+                book.title,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingGrid extends StatelessWidget {
+  const _LoadingGrid();
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+      sliver: SliverGrid.builder(
+        itemCount: 4,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 14,
+          mainAxisSpacing: 14,
+          mainAxisExtent: 348,
+        ),
+        itemBuilder: (context, index) => const _SkeletonCard(),
+      ),
+    );
+  }
+}
+
+class _SkeletonCard extends StatelessWidget {
+  const _SkeletonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    const fill = Color(0xFFECE9F1);
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 195,
+              decoration: BoxDecoration(
+                color: fill,
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Container(
+              height: 13,
+              decoration: BoxDecoration(
+                color: fill,
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+            const SizedBox(height: 8),
+            FractionallySizedBox(
+              widthFactor: .68,
+              child: Container(
+                height: 11,
+                decoration: BoxDecoration(
+                  color: fill,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyResults extends StatelessWidget {
+  const _EmptyResults({required this.query, required this.onReset});
+
+  final String query;
+  final VoidCallback onReset;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
+      child: Container(
+        key: const ValueKey('empty-results'),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: const Color(0xFFE8E5ED)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.search_off_rounded, size: 28),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              '아직 이 책장은 비어 있어요',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 7),
+            Text(
+              '“$query”와 일치하는 책을 찾지 못했어요.\n다른 제목이나 저자로 다시 검색해 보세요.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                height: 1.45,
+                fontSize: 13.5,
+                color: Color(0xFF77727F),
+              ),
+            ),
+            const SizedBox(height: 18),
+            FilledButton.tonalIcon(
+              onPressed: onReset,
+              icon: const Icon(Icons.auto_stories_rounded, size: 18),
+              label: const Text('추천 책으로 돌아가기'),
+            ),
+          ],
+        ),
       ),
     );
   }

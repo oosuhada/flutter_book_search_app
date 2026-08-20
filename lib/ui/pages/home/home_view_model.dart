@@ -14,6 +14,20 @@ class HomeState {
   final String query;
   final bool isLoading;
   final bool isSample;
+
+  HomeState copyWith({
+    List<Book>? books,
+    String? query,
+    bool? isLoading,
+    bool? isSample,
+  }) {
+    return HomeState(
+      books: books ?? this.books,
+      query: query ?? this.query,
+      isLoading: isLoading ?? this.isLoading,
+      isSample: isSample ?? this.isSample,
+    );
+  }
 }
 
 class HomeViewModel extends Notifier<HomeState> {
@@ -21,9 +35,9 @@ class HomeViewModel extends Notifier<HomeState> {
 
   @override
   HomeState build() {
-    return HomeState(
+    return const HomeState(
       books: BookRepository.sampleBooks,
-      query: 'Flutter',
+      query: '',
       isLoading: false,
       isSample: true,
     );
@@ -31,17 +45,15 @@ class HomeViewModel extends Notifier<HomeState> {
 
   Future<void> search(String query) async {
     final normalizedQuery = query.trim();
-    state = HomeState(
-      books: state.books,
-      query: normalizedQuery,
-      isLoading: true,
-      isSample: state.isSample,
-    );
+    state = state.copyWith(query: normalizedQuery, isLoading: true);
 
+    // Keeps the transition legible instead of flashing instantly in sample mode.
+    await Future<void>.delayed(const Duration(milliseconds: 320));
     final result = await _repository.search(normalizedQuery);
+
     state = HomeState(
       books: result.books,
-      query: normalizedQuery.isEmpty ? 'Flutter' : normalizedQuery,
+      query: normalizedQuery,
       isLoading: false,
       isSample: result.isSample,
     );

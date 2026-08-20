@@ -19,7 +19,7 @@ class BookRepository {
   static bool get hasLiveCredentials =>
       _clientId.isNotEmpty && _clientSecret.isNotEmpty;
 
-  static final List<Book> sampleBooks = [
+  static const List<Book> sampleBooks = [
     Book(
       title: 'Flutter in Action',
       link: 'https://search.shopping.naver.com/book/home',
@@ -29,7 +29,8 @@ class BookRepository {
       publisher: 'Manning',
       pubdate: '20200107',
       isbn: '9781617296147',
-      description: 'Flutter의 widget, state, animation을 단계별로 다루는 sample book.',
+      description:
+          'Flutter의 위젯, 상태 관리, 애니메이션과 앱 구조를 실제 예제로 익힐 수 있는 실전 입문서입니다.',
     ),
     Book(
       title: 'Clean Architecture',
@@ -40,7 +41,8 @@ class BookRepository {
       publisher: 'Prentice Hall',
       pubdate: '20170920',
       isbn: '9780134494166',
-      description: '유지보수 가능한 소프트웨어 구조와 경계 설계를 다루는 책.',
+      description:
+          '변화에 강한 소프트웨어를 만들기 위해 경계, 의존성 규칙, 컴포넌트 설계를 어떻게 다뤄야 하는지 설명합니다.',
     ),
     Book(
       title: 'Designing Data-Intensive Applications',
@@ -51,7 +53,8 @@ class BookRepository {
       publisher: "O'Reilly Media",
       pubdate: '20170316',
       isbn: '9781449373320',
-      description: '데이터 시스템의 저장, 복제, 분산 처리 원리를 설명하는 책.',
+      description:
+          '데이터 시스템의 저장, 복제, 분산 처리와 일관성 문제를 폭넓게 다루는 현대 백엔드 설계의 대표 참고서입니다.',
     ),
     Book(
       title: 'The Pragmatic Programmer',
@@ -62,7 +65,8 @@ class BookRepository {
       publisher: 'Addison-Wesley',
       pubdate: '20190913',
       isbn: '9780135957059',
-      description: '실용적인 개발 습관과 문제 해결 방식을 다루는 개발 고전.',
+      description:
+          '코드 작성부터 협업, 자동화, 디버깅까지 오래 써먹을 수 있는 실용적인 개발 습관과 문제 해결 방식을 담았습니다.',
     ),
     Book(
       title: 'Refactoring',
@@ -73,7 +77,8 @@ class BookRepository {
       publisher: 'Addison-Wesley',
       pubdate: '20181120',
       isbn: '9780134757599',
-      description: '동작을 보존하면서 코드 구조를 개선하는 리팩터링 패턴 모음.',
+      description:
+          '기존 동작을 보존하면서 코드의 구조를 안전하게 개선하는 리팩터링 기법과 판단 기준을 구체적인 예제로 설명합니다.',
     ),
     Book(
       title: 'Head First Design Patterns',
@@ -84,7 +89,32 @@ class BookRepository {
       publisher: "O'Reilly Media",
       pubdate: '20201229',
       isbn: '9781492078005',
-      description: '객체지향 설계 패턴을 시각적인 예제와 함께 설명하는 입문서.',
+      description:
+          '객체지향 설계 패턴을 시각적인 설명과 반복 가능한 예제로 풀어내 패턴의 의도와 적용 시점을 익히기 좋은 책입니다.',
+    ),
+    Book(
+      title: "Don't Make Me Think, Revisited",
+      link: 'https://search.shopping.naver.com/book/home',
+      image: 'https://covers.openlibrary.org/b/isbn/9780321965516-L.jpg',
+      author: 'Steve Krug',
+      discount: '',
+      publisher: 'New Riders',
+      pubdate: '20140103',
+      isbn: '9780321965516',
+      description:
+          '사용자가 생각하지 않아도 자연스럽게 이해할 수 있는 화면을 만들기 위한 웹·모바일 사용성 원칙을 간결하게 소개합니다.',
+    ),
+    Book(
+      title: 'The Design of Everyday Things',
+      link: 'https://search.shopping.naver.com/book/home',
+      image: 'https://covers.openlibrary.org/b/isbn/9780465050659-L.jpg',
+      author: 'Don Norman',
+      discount: '',
+      publisher: 'Basic Books',
+      pubdate: '20131105',
+      isbn: '9780465050659',
+      description:
+          '좋은 제품이 어떻게 행동을 유도하고 실수를 예방하는지 일상 사물의 사례를 통해 설명하는 디자인 고전입니다.',
     ),
   ];
 
@@ -104,7 +134,7 @@ class BookRepository {
         Uri.https(
           'openapi.naver.com',
           '/v1/search/book.json',
-          {'query': normalizedQuery.isEmpty ? 'Flutter' : normalizedQuery},
+          {'query': normalizedQuery.isEmpty ? '개발' : normalizedQuery},
         ),
         headers: {
           'X-Naver-Client-Id': _clientId,
@@ -117,7 +147,8 @@ class BookRepository {
         return BookSearchResult(books: dto.items, isSample: false);
       }
     } catch (_) {
-      // Fall back to deterministic sample data for an offline portfolio preview.
+      // A deterministic curated shelf keeps the portfolio preview usable
+      // when the network/API is unavailable without ever bundling credentials.
     } finally {
       client.close();
     }
@@ -129,17 +160,14 @@ class BookRepository {
   }
 
   List<Book> _sampleSearch(String query) {
-    if (query.isEmpty || query.toLowerCase() == 'flutter') {
-      return List<Book>.unmodifiable(sampleBooks);
-    }
+    if (query.isEmpty) return List<Book>.unmodifiable(sampleBooks);
 
     final lower = query.toLowerCase();
-    final matches = sampleBooks.where((book) {
+    return sampleBooks.where((book) {
       return book.title.toLowerCase().contains(lower) ||
           book.author.toLowerCase().contains(lower) ||
-          book.publisher.toLowerCase().contains(lower);
-    }).toList();
-
-    return matches.isEmpty ? List<Book>.unmodifiable(sampleBooks) : matches;
+          book.publisher.toLowerCase().contains(lower) ||
+          book.description.toLowerCase().contains(lower);
+    }).toList(growable: false);
   }
 }
