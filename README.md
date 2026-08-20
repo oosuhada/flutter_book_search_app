@@ -7,13 +7,13 @@ Naver Book Search API를 연결할 수 있으며, credential이 없는 환경에
 ## Preview
 
 <p align="center">
-  <img src=".github/assets/portfolio/01-book-discovery.png" width="31%" alt="Book discovery home" />
-  <img src=".github/assets/portfolio/02-search-results.png" width="31%" alt="Book search results" />
-  <img src=".github/assets/portfolio/03-book-detail.png" width="31%" alt="Book detail" />
+  <img src=".github/assets/portfolio/01-book-discovery.png" width="45%" alt="Book discovery home" />
+  <img src=".github/assets/portfolio/02-search-results.png" width="45%" alt="Book search results" />
 </p>
 
 <p align="center">
-  <img src=".github/assets/portfolio/04-empty-or-loading.png" width="31%" alt="Book search empty state" />
+  <img src=".github/assets/portfolio/03-book-detail.png" width="45%" alt="Book detail" />
+  <img src=".github/assets/portfolio/04-empty-or-loading.png" width="45%" alt="Book search empty state" />
 </p>
 
 대표 이미지는 Flutter Web이 아니라 **Android 15 / API 35 Emulator**에서 실제 앱을 실행하고 interaction한 뒤 캡처했습니다.
