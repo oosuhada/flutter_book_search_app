@@ -8,8 +8,9 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: MyApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Book Search'), findsOneWidget);
-    expect(find.text('Sample data'), findsOneWidget);
+    expect(find.text('Book Finder'), findsOneWidget);
+    expect(find.text('Preview data'), findsOneWidget);
+    expect(find.text('Find your next read'), findsOneWidget);
     expect(find.text('Flutter in Action'), findsWidgets);
     expect(find.text('Clean Architecture'), findsWidgets);
   });

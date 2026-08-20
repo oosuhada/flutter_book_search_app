@@ -23,7 +23,7 @@ class BookRepository {
     Book(
       title: 'Flutter in Action',
       link: 'https://search.shopping.naver.com/book/home',
-      image: '',
+      image: 'https://covers.openlibrary.org/b/isbn/9781617296147-L.jpg',
       author: 'Eric Windmill',
       discount: '',
       publisher: 'Manning',
@@ -34,7 +34,7 @@ class BookRepository {
     Book(
       title: 'Clean Architecture',
       link: 'https://search.shopping.naver.com/book/home',
-      image: '',
+      image: 'https://covers.openlibrary.org/b/isbn/9780134494166-L.jpg',
       author: 'Robert C. Martin',
       discount: '',
       publisher: 'Prentice Hall',
@@ -45,7 +45,7 @@ class BookRepository {
     Book(
       title: 'Designing Data-Intensive Applications',
       link: 'https://search.shopping.naver.com/book/home',
-      image: '',
+      image: 'https://covers.openlibrary.org/b/isbn/9781449373320-L.jpg',
       author: 'Martin Kleppmann',
       discount: '',
       publisher: "O'Reilly Media",
@@ -56,7 +56,7 @@ class BookRepository {
     Book(
       title: 'The Pragmatic Programmer',
       link: 'https://search.shopping.naver.com/book/home',
-      image: '',
+      image: 'https://covers.openlibrary.org/b/isbn/9780135957059-L.jpg',
       author: 'David Thomas · Andrew Hunt',
       discount: '',
       publisher: 'Addison-Wesley',
@@ -67,7 +67,7 @@ class BookRepository {
     Book(
       title: 'Refactoring',
       link: 'https://search.shopping.naver.com/book/home',
-      image: '',
+      image: 'https://covers.openlibrary.org/b/isbn/9780134757599-L.jpg',
       author: 'Martin Fowler',
       discount: '',
       publisher: 'Addison-Wesley',
@@ -76,15 +76,15 @@ class BookRepository {
       description: '동작을 보존하면서 코드 구조를 개선하는 리팩터링 패턴 모음.',
     ),
     Book(
-      title: 'Learning Riverpod',
+      title: 'Head First Design Patterns',
       link: 'https://search.shopping.naver.com/book/home',
-      image: '',
-      author: 'Portfolio sample',
+      image: 'https://covers.openlibrary.org/b/isbn/9781492078005-L.jpg',
+      author: 'Eric Freeman · Elisabeth Robson',
       discount: '',
-      publisher: 'Sample data',
-      pubdate: '20260820',
-      isbn: 'SAMPLE-RIVERPOD',
-      description: '검색·상태관리 UI를 안정적으로 보여주기 위한 portfolio sample item.',
+      publisher: "O'Reilly Media",
+      pubdate: '20201229',
+      isbn: '9781492078005',
+      description: '객체지향 설계 패턴을 시각적인 예제와 함께 설명하는 입문서.',
     ),
   ];
 
