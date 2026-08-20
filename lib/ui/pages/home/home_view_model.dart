@@ -2,33 +2,52 @@ import 'package:flutter_book_search_app/data/model/book.dart';
 import 'package:flutter_book_search_app/data/repository/book_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// 1. 화면에서 필요한 상태 만들기!
 class HomeState {
-  HomeState({required this.books});
-  List<Book>? books;
+  const HomeState({
+    required this.books,
+    required this.query,
+    required this.isLoading,
+    required this.isSample,
+  });
+
+  final List<Book> books;
+  final String query;
+  final bool isLoading;
+  final bool isSample;
 }
 
-// 2. 상태를 관리할 뷰모델 만들기! Notifier<뷰모델이 관리할 상태 클래스>
 class HomeViewModel extends Notifier<HomeState> {
-  // 3. build 함수 재정의 해서 초기상태 리턴해주기!
+  final BookRepository _repository = BookRepository();
+
   @override
   HomeState build() {
-    return HomeState(books: null);
+    return HomeState(
+      books: BookRepository.sampleBooks,
+      query: 'Flutter',
+      isLoading: false,
+      isSample: true,
+    );
   }
 
-  // 4. Repository에서 데이터 받아와서 상태 업데이트 해주기!
   Future<void> search(String query) async {
-    BookRepository bookRepository = BookRepository();
+    final normalizedQuery = query.trim();
     state = HomeState(
-      books: await bookRepository.search(query),
+      books: state.books,
+      query: normalizedQuery,
+      isLoading: true,
+      isSample: state.isSample,
+    );
+
+    final result = await _repository.search(normalizedQuery);
+    state = HomeState(
+      books: result.books,
+      query: normalizedQuery.isEmpty ? 'Flutter' : normalizedQuery,
+      isLoading: false,
+      isSample: result.isSample,
     );
   }
 }
 
-// 5. HomeViewModel을 관리할 관리자 만들어주기
-// NotifierProvider<HomeViewModel, HomeState>
-// => HomeState 상태를 관리하는 HomeViewModel 관리해주세요.
-// ref.watch를 통해 homeViewModelProvider를 부르면 아직 생성안됐으면 만들어서 주고, 있으면 있던거 주세요!
 final homeViewModelProvider = NotifierProvider<HomeViewModel, HomeState>(() {
   return HomeViewModel();
 });

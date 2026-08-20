@@ -4,21 +4,20 @@ import 'package:flutter_book_search_app/ui/pages/home/home_view_model.dart';
 import 'package:flutter_book_search_app/ui/pages/home/widgets/home_bottom_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// 1. ConsumerStatefulWidget으로 변경
 class HomePage extends ConsumerStatefulWidget {
-  // 3. createState 의 반환타입 변경
+  const HomePage({super.key});
+
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-// 1. ConsumerState로 변경
 class _HomePageState extends ConsumerState<HomePage> {
-  TextEditingController textEditingController = TextEditingController();
+  final TextEditingController textEditingController =
+      TextEditingController(text: 'Flutter');
 
-  void search(String text) {
-    // 8. 검색 시 뷰모델의 search함수 호출
-    ref.read(homeViewModelProvider.notifier).search(text);
-    print("search");
+  Future<void> search(String text) async {
+    FocusScope.of(context).unfocus();
+    await ref.read(homeViewModelProvider.notifier).search(text);
   }
 
   @override
@@ -29,82 +28,212 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // 4. HomeViewModel 의 상태 구독 시작!
-    HomeState homeState = ref.watch(homeViewModelProvider);
+    final state = ref.watch(homeViewModelProvider);
+
     return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: TextField(
-            maxLines: 1,
-            controller: textEditingController,
-            onSubmitted: search,
-            decoration: InputDecoration(
-              hintText: '검색어를 입력해 주세요',
-              border: MaterialStateOutlineInputBorder.resolveWith(
-                (states) {
-                  if (states.contains(WidgetState.focused)) {
-                    return OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    );
-                  }
-                  return OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.grey),
-                  );
-                },
+          title: const Text('Book Search'),
+          centerTitle: true,
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                child: TextField(
+                  maxLines: 1,
+                  controller: textEditingController,
+                  onSubmitted: search,
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: '책 제목이나 저자를 검색하세요',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      tooltip: '검색',
+                      onPressed: () => search(textEditingController.text),
+                      icon: const Icon(Icons.arrow_forward),
+                    ),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '“${state.query}” · ${state.books.length} books',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                    ),
+                    if (state.isSample)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              Theme.of(context).colorScheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: const Text(
+                          'Sample data',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (state.isLoading) const LinearProgressIndicator(),
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                  itemCount: state.books.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.69,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                  ),
+                  itemBuilder: (context, index) {
+                    final book = state.books[index];
+                    return _BookCard(
+                      book: book,
+                      index: index,
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isDismissible: true,
+                          showDragHandle: true,
+                          builder: (context) => HomeBottomSheet(book),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-          actions: [
-            GestureDetector(
-              onTap: () {
-                search(textEditingController.text);
-              },
-              child: Container(
-                width: 50,
-                height: 50,
-                color: Colors.transparent,
-                child: Icon(Icons.search),
+        ),
+      ),
+    );
+  }
+}
+
+class _BookCard extends StatelessWidget {
+  const _BookCard({
+    required this.book,
+    required this.index,
+    required this.onTap,
+  });
+
+  final Book book;
+  final int index;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: _BookCover(book: book, index: index),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    book.author,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-        body: GridView.builder(
-          padding: EdgeInsets.all(20),
-          // 5. homeState의 Book List 가 널이면 그리드뷰 아이템은 0개!
-          itemCount: homeState.books?.length ?? 0,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            childAspectRatio: 3 / 4,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+      ),
+    );
+  }
+}
+
+class _BookCover extends StatelessWidget {
+  const _BookCover({required this.book, required this.index});
+
+  final Book book;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    if (book.image.isNotEmpty) {
+      return Image.network(
+        book.image,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _placeholder(context),
+      );
+    }
+    return _placeholder(context);
+  }
+
+  Widget _placeholder(BuildContext context) {
+    final palette = [
+      Colors.indigo,
+      Colors.teal,
+      Colors.deepOrange,
+      Colors.blueGrey,
+      Colors.deepPurple,
+      Colors.green,
+    ];
+    final color = palette[index % palette.length];
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      color: color,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.menu_book_rounded, color: Colors.white, size: 42),
+          const SizedBox(height: 14),
+          Text(
+            book.title,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          itemBuilder: (context, index) {
-            // 6. book 하나씩 가져오기
-            Book book = homeState.books![index];
-            return GestureDetector(
-              onTap: () {
-                print('item tap');
-                showModalBottomSheet(
-                  context: context,
-                  isDismissible: true,
-                  builder: (context) {
-                    return HomeBottomSheet(book);
-                  },
-                );
-              },
-              child: Image.network(
-                // 7. 데이터 씌우기
-                book.image,
-                fit: BoxFit.cover,
-              ),
-            );
-          },
-        ),
+        ],
       ),
     );
   }

@@ -3,9 +3,9 @@ import 'package:flutter_book_search_app/data/model/book.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class DetailPage extends StatelessWidget {
-  DetailPage(this.book);
+  const DetailPage(this.book, {super.key});
 
-  Book book;
+  final Book book;
 
   @override
   Widget build(BuildContext context) {

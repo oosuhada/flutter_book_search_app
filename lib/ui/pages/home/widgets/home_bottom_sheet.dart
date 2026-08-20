@@ -3,18 +3,16 @@ import 'package:flutter_book_search_app/data/model/book.dart';
 import 'package:flutter_book_search_app/ui/pages/detail/detail_page.dart';
 
 class HomeBottomSheet extends StatelessWidget {
-  // 2. 생성자에 추가
-  HomeBottomSheet(this.book);
+  const HomeBottomSheet(this.book, {super.key});
 
-  // 1. 홈페이지에서 전달해줄 수 있게 추가
-  Book book;
+  final Book book;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 300,
       width: double.infinity,
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         left: 20,
         right: 20,
         top: 20,
@@ -22,19 +20,47 @@ class HomeBottomSheet extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // 3. 데이터 씌우기
-          Image.network(
-            book.image,
-            fit: BoxFit.fitHeight,
+          SizedBox(
+            width: 110,
+            child: book.image.isEmpty
+                ? Container(
+                    decoration: BoxDecoration(
+                      color: Colors.indigo,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.menu_book_rounded,
+                      color: Colors.white,
+                      size: 42,
+                    ),
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      book.image,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const ColoredBox(
+                        color: Colors.indigo,
+                        child: Center(
+                          child: Icon(
+                            Icons.menu_book_rounded,
+                            color: Colors.white,
+                            size: 42,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   book.title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -43,19 +69,19 @@ class HomeBottomSheet extends StatelessWidget {
                 ),
                 Text(
                   book.author,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                   ),
                 ),
                 Text(
                   book.description,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                   ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Spacer(),
+                const Spacer(),
                 GestureDetector(
                   onTap: () {
                     // 자세히 보기 터치했을 때 DetailPage로 가게 미리 구현
@@ -70,7 +96,7 @@ class HomeBottomSheet extends StatelessWidget {
                     height: 50, // UX 고려한 높이
                     alignment: Alignment.center,
                     color: Colors.transparent,
-                    child: Text(
+                    child: const Text(
                       '자세히 보기',
                       style: TextStyle(
                         color: Colors.blueAccent,
