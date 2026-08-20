@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_book_search_app/data/model/book.dart';
 import 'package:flutter_book_search_app/ui/pages/detail/detail_page.dart';
 import 'package:flutter_book_search_app/ui/pages/home/home_view_model.dart';
+import 'package:flutter_book_search_app/v2/v2_glass.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -57,22 +58,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: SizedBox(
-                    height: 38,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _suggestions.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        final suggestion = _suggestions[index];
-                        final isSelected = state.query.toLowerCase() ==
-                            suggestion.toLowerCase();
-                        return _SuggestionPill(
-                          label: suggestion,
-                          selected: isSelected,
-                          onTap: () => _selectSuggestion(suggestion),
-                        );
-                      },
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: AppGlassSegmentedControl<String>(
+                      values: _suggestions,
+                      selected: state.query,
+                      labelBuilder: (value) => value,
+                      onSelected: _selectSuggestion,
                     ),
                   ),
                 ),
@@ -326,76 +318,12 @@ class _DiscoveryHero extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Container(
-                      height: 58,
-                      padding: const EdgeInsets.fromLTRB(5, 4, 5, 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x240F0B2F),
-                            blurRadius: 22,
-                            offset: Offset(0, 9),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 10),
-                          const Icon(
-                            Icons.search_rounded,
-                            size: 21,
-                            color: Color(0xFF7D7789),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              key: const ValueKey('book-search-field'),
-                              controller: controller,
-                              textInputAction: TextInputAction.search,
-                              onSubmitted: onSubmitted,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF2F2C36),
-                              ),
-                              decoration: const InputDecoration(
-                                hintText: '제목, 저자, 출판사를 검색해요',
-                                hintStyle: TextStyle(
-                                  color: Color(0xFFAAA5B1),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                filled: false,
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.zero,
-                                isDense: true,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Material(
-                            color: const Color(0xFF5F55CC),
-                            borderRadius: BorderRadius.circular(14),
-                            child: InkWell(
-                              key: const ValueKey('book-search-button'),
-                              onTap: () => onSubmitted(controller.text),
-                              borderRadius: BorderRadius.circular(14),
-                              child: const SizedBox(
-                                width: 44,
-                                height: 44,
-                                child: Icon(
-                                  Icons.arrow_upward_rounded,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    AppGlassSearchField(
+                      fieldKey: const ValueKey('book-search-field'),
+                      buttonKey: const ValueKey('book-search-button'),
+                      controller: controller,
+                      onSubmitted: onSubmitted,
+                      darkContext: true,
                     ),
                   ],
                 ),
@@ -555,60 +483,6 @@ class _MiniBook extends StatelessWidget {
             color: accent.withValues(alpha: 0.22),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SuggestionPill extends StatelessWidget {
-  const _SuggestionPill({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: selected ? const Color(0xFFEEEAFE) : Colors.white,
-      shape: StadiumBorder(
-        side: BorderSide(
-          color: selected ? const Color(0xFFCFC5FA) : const Color(0xFFE8E4EC),
-        ),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const StadiumBorder(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (selected) ...[
-                const Icon(
-                  Icons.auto_awesome_rounded,
-                  size: 13,
-                  color: Color(0xFF6258C9),
-                ),
-                const SizedBox(width: 6),
-              ],
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12.2,
-                  fontWeight: FontWeight.w700,
-                  color: selected
-                      ? const Color(0xFF5148B6)
-                      : const Color(0xFF6F6977),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
