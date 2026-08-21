@@ -648,6 +648,8 @@ class _BookCover extends StatelessWidget {
             book.image,
             fit: BoxFit.contain,
             filterQuality: FilterQuality.medium,
+            loadingBuilder: (context, child, progress) =>
+                progress == null ? child : _placeholder(context),
             errorBuilder: (_, __, ___) => _placeholder(context),
           );
 
