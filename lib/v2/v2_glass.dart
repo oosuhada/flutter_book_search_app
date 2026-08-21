@@ -238,7 +238,7 @@ class AppGlassSearchField extends StatelessWidget {
               decoration: const InputDecoration(
                 hintText: '제목, 저자, 출판사를 검색해요',
                 hintStyle: TextStyle(
-                  color: Color(0xFF96909F),
+                  color: Color(0xFF6D6875),
                   fontWeight: FontWeight.w500,
                 ),
                 filled: false,
