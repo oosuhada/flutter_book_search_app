@@ -23,7 +23,7 @@ class BookRepository {
     Book(
       title: 'Flutter in Action',
       link: 'https://search.shopping.naver.com/book/home',
-      image: 'https://covers.openlibrary.org/b/isbn/9781617296147-L.jpg',
+      image: 'https://covers.openlibrary.org/b/isbn/9781617296147-M.jpg',
       author: 'Eric Windmill',
       discount: '',
       publisher: 'Manning',
@@ -35,7 +35,7 @@ class BookRepository {
     Book(
       title: 'Clean Architecture',
       link: 'https://search.shopping.naver.com/book/home',
-      image: 'https://covers.openlibrary.org/b/isbn/9780134494166-L.jpg',
+      image: 'https://covers.openlibrary.org/b/isbn/9780134494166-M.jpg',
       author: 'Robert C. Martin',
       discount: '',
       publisher: 'Prentice Hall',
@@ -47,7 +47,7 @@ class BookRepository {
     Book(
       title: 'Designing Data-Intensive Applications',
       link: 'https://search.shopping.naver.com/book/home',
-      image: 'https://covers.openlibrary.org/b/isbn/9781449373320-L.jpg',
+      image: 'https://covers.openlibrary.org/b/isbn/9781449373320-M.jpg',
       author: 'Martin Kleppmann',
       discount: '',
       publisher: "O'Reilly Media",
@@ -59,7 +59,7 @@ class BookRepository {
     Book(
       title: 'The Pragmatic Programmer',
       link: 'https://search.shopping.naver.com/book/home',
-      image: 'https://covers.openlibrary.org/b/isbn/9780135957059-L.jpg',
+      image: 'https://covers.openlibrary.org/b/isbn/9780135957059-M.jpg',
       author: 'David Thomas · Andrew Hunt',
       discount: '',
       publisher: 'Addison-Wesley',
@@ -71,7 +71,7 @@ class BookRepository {
     Book(
       title: 'Refactoring',
       link: 'https://search.shopping.naver.com/book/home',
-      image: 'https://covers.openlibrary.org/b/isbn/9780134757599-L.jpg',
+      image: 'https://covers.openlibrary.org/b/isbn/9780134757599-M.jpg',
       author: 'Martin Fowler',
       discount: '',
       publisher: 'Addison-Wesley',
@@ -83,7 +83,7 @@ class BookRepository {
     Book(
       title: 'Head First Design Patterns',
       link: 'https://search.shopping.naver.com/book/home',
-      image: 'https://covers.openlibrary.org/b/isbn/9781492078005-L.jpg',
+      image: 'https://covers.openlibrary.org/b/isbn/9781492078005-M.jpg',
       author: 'Eric Freeman · Elisabeth Robson',
       discount: '',
       publisher: "O'Reilly Media",
@@ -95,7 +95,7 @@ class BookRepository {
     Book(
       title: "Don't Make Me Think, Revisited",
       link: 'https://search.shopping.naver.com/book/home',
-      image: 'https://covers.openlibrary.org/b/isbn/9780321965516-L.jpg',
+      image: 'https://covers.openlibrary.org/b/isbn/9780321965516-M.jpg',
       author: 'Steve Krug',
       discount: '',
       publisher: 'New Riders',
@@ -107,7 +107,7 @@ class BookRepository {
     Book(
       title: 'The Design of Everyday Things',
       link: 'https://search.shopping.naver.com/book/home',
-      image: 'https://covers.openlibrary.org/b/isbn/9780465050659-L.jpg',
+      image: 'https://covers.openlibrary.org/b/isbn/9780465050659-M.jpg',
       author: 'Don Norman',
       discount: '',
       publisher: 'Basic Books',
