@@ -146,13 +146,10 @@ class _MetadataPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppGlassSurface(
+      borderRadius: BorderRadius.circular(20),
+      blurSigma: 12,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE8E5ED)),
-      ),
       child: Column(
         children: [
           _MetadataRow(
