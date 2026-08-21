@@ -27,16 +27,16 @@ class DetailPage extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
                   sliver: SliverList.list(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 26),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF0EEF6),
-                          borderRadius: BorderRadius.circular(28),
-                        ),
+                      AppGlassSurface(
+                        tint: const Color(0xFFF2EEFF),
+                        surfaceOpacity: .62,
+                        blurSigma: 22,
+                        borderRadius: BorderRadius.circular(28),
+                        padding: const EdgeInsets.symmetric(vertical: 18),
                         child: Center(
                           child: SizedBox(
-                            width: 164,
-                            height: 238,
+                            width: 196,
+                            height: 284,
                             child: Hero(
                               tag: 'book-cover-${book.isbn}-${book.title}',
                               child: _DetailCover(book: book),
@@ -291,19 +291,18 @@ class _DetailCover extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(14),
         child: book.image.isEmpty
             ? placeholder
-            : ColoredBox(
-                color: Colors.white,
-                child: Image.network(
-                  book.image,
-                  fit: BoxFit.contain,
-                  filterQuality: FilterQuality.high,
-                  loadingBuilder: (context, child, progress) =>
-                      progress == null ? child : placeholder,
-                  errorBuilder: (_, __, ___) => placeholder,
-                ),
+            : Image.network(
+                book.image,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                loadingBuilder: (context, child, progress) =>
+                    progress == null ? child : placeholder,
+                errorBuilder: (_, __, ___) => placeholder,
               ),
       ),
     );

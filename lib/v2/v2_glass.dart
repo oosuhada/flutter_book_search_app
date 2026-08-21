@@ -55,6 +55,8 @@ class AppGlassSurface extends StatelessWidget {
     this.blurSigma = 18,
     this.tint,
     this.surfaceOpacity,
+    this.onTap,
+    this.semanticLabel,
   });
 
   final Widget child;
@@ -62,6 +64,8 @@ class AppGlassSurface extends StatelessWidget {
   final BorderRadius borderRadius;
   final double blurSigma;
   final Color? tint;
+  final VoidCallback? onTap;
+  final String? semanticLabel;
 
   /// Optional local density override for content-heavy glass surfaces.
   ///
@@ -92,6 +96,18 @@ class AppGlassSurface extends StatelessWidget {
             ? (dark ? .42 : .28)
             : (middleAlpha - .08).clamp(.0, 1.0);
 
+    Widget content = Padding(padding: padding, child: child);
+    if (onTap != null) {
+      content = Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: borderRadius,
+          child: content,
+        ),
+      );
+    }
+
     final body = Stack(
       fit: StackFit.passthrough,
       children: [
@@ -115,7 +131,7 @@ class AppGlassSurface extends StatelessWidget {
               width: 1,
             ),
           ),
-          child: Padding(padding: padding, child: child),
+          child: content,
         ),
         Positioned.fill(
           child: IgnorePointer(
@@ -152,7 +168,7 @@ class AppGlassSurface extends StatelessWidget {
             ),
     );
 
-    return DecoratedBox(
+    final glass = DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         boxShadow: [
@@ -172,6 +188,9 @@ class AppGlassSurface extends StatelessWidget {
       ),
       child: clipped,
     );
+
+    if (semanticLabel == null) return glass;
+    return Semantics(label: semanticLabel, button: onTap != null, child: glass);
   }
 }
 
